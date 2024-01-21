@@ -10,9 +10,12 @@ In this paper, we introduce GraphRBF, an end-to-end interpretable hierarchical g
 ## 安装方法Installation  
 ## 使用手则Usage  
 我们在GraphRBF-main文件夹中打包了数据提取data_io_guassian.py、模型训练training_guassian.py、GraphRBF模型GN_model_guassian_posemb.py、验证模块valid_metrices.py以及预测代码GraphRBF.py。  
+We have packaged data extraction: data_io_guassian.py, model training: training_guassian.py, GraphRBF model: GN_model_guassian_posemb.py, the validation module: valid_metrices.py, and the prediction code: GraphRBF.py.  
 首先按照上述要求安装环境，之后使用文件夹中‘预测命令prediction code.log’文件中的代码：  
+First, install the environment as described above, and after that, use the code from the prediction command 'prediction code.log' file in the folder:  
   `cd ../GraphRBF-main`  
   `python GraphRBF.py --querypath ../GraphRBF-main/example --filename 1ddl_A --ligands DNA,RNA,P`  
 命令列表：  
-  --querypath   蛋白质文件路径The path of query structure
+  --querypath   蛋白质文件路径The path of query structure  
   --filename    蛋白质名称（单链蛋白，需提供对应的pdb、pssm和hmm文件）The file name of the query structure（single chain protein, we need user to upload its pdb,pssm and hmm file）  
+  
