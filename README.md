@@ -29,32 +29,34 @@ A virtual environment can be created and (de)activated as follows by using conda
 Note: Make sure environment is activated before running each command.
 
 #### 2.3.1 Install requirements
-(1) Install pytorch 2.0.1 (For more details, please refer to https://pytorch.org/)
+Install pytorch 2.0.1 (For more details, please refer to https://pytorch.org/)
         For linux:
         # CUDA 11.7
         $ pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2
         # CPU only
         $ pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cpu
-    (2) Install torch_geometric 2.3.1 (For more details, please refer to https://pytorch-geometric.readthedocs.io/en/latest/install/installation.html)
+Install torch_geometric 2.3.1 (For more details, please refer to https://pytorch-geometric.readthedocs.io/en/latest/install/installation.html)
         $ pip install torch-scatter -f https://data.pyg.org/whl/torch-2.0.0+cu117.html
         $ pip install torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-2.0.0+cu117.html
         $ pip install torch-cluster -f https://data.pyg.org/whl/torch-2.0.0+cu117.html
         $ pip install torch_geometric==2.3.1
-    (3) Install other requirements
+Install other requirements
         $ pip install torchnet==0.0.4
         $ pip install tqdm
         $ pip install prettytable
 
-    Note: Typical install requirements time on a "normal" desktop computer is 10 minutes.
+Note: Typical install requirements time on a "normal" desktop computer is 10 minutes.
     
 #### 2.3.2 Install the bioinformatics tools
-    (1) Install blast+ for extracting PSSM (position-specific scoring matrix) profiles
+Install blast+ for extracting PSSM (position-specific scoring matrix) profiles
     To install ncbi-blast-2.8.1+ and download NR database (ftp://ftp.ncbi.nlm.nih.gov/blast/db/) for psiblast, please refer to BLAST® Help (https://www.ncbi.nlm.nih.gov/books/NBK52640/).
+    
     Set the absolute paths of blast+ and NR databases in the script "scripts/prediction.py".
-    (2) Install HHblits for extracting HMM profiles
+Install HHblits for extracting HMM profiles
     To install HHblits and download uniclust30_2018_08 (http://wwwuser.gwdg.de/~compbiol/uniclust/2018_08/uniclust30_2018_08_hhsuite.tar.gz) for HHblits, please refer to https://github.com/soedinglab/hh-suite.
     Set the absolute paths of HHblits and uniclust30_2018_08 databases in the script "scripts/prediction.py".
-    (3) Install DSSP for extracting SS (Secondary structure) profiles
+    
+Install DSSP for extracting SS (Secondary structure) profiles
     DSSP is contained in "scripts/dssp", and it should be given executable permission by:
         $ chmod +x scripts/dssp
 
