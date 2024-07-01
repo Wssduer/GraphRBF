@@ -1,0 +1,8 @@
+Prediction command：
+cd ../GraphRBF-main
+python GraphRBF.py --querypath ../GraphRBF-main/example --filename 1ddl --chain A--ligands DNA,RNA
+python GraphRBF.py --querypath ../GraphRBF-main/example --filename 1a7n --chain AB--ligands P
+
+The file is for single/multi-chain proteins, and it is necessary to provide pdb, pssm, and hmm files placed in the 'example' directory;
+For multi-chain proteins, pssm and hmm files for each chain must be provided, as well as the complete pdb file, and they should be named as 'protein_chain.pdb'.
+For example, '1a7n_AB.pdb', '1a7n_A.pssm', and '1a7n_B.pssm', as well as '1a7n_A.hmm' and '1a7n_B.hmm'.
