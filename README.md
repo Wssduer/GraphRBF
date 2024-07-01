@@ -6,7 +6,9 @@ This project serves users to use our software to directly predict protein bindin
 ## Description 
   Identification of protein-protein and protein-nucleic acid binding sites provides insights into biological processes related to protein functions and technical guidance for disease diagnosis and drug design. However, accurate predictions by computational approaches remain highly challenging due to the limited knowledge of residue binding patterns. The binding pattern of a residue should be characterized by the spatial distribution of its neighboring residues combined with their physicochemical information interaction, which yet can not be achieved by previous methods. Here, we design GraphRBF, a hierarchical geometric deep learning model to learn residue binding patterns from big data. To achieve it, GraphRBF describes physicochemical information interactions by designing an enhanced graph neural network and characterizes residue spatial distributions by introducing a prioritized radial basis function neural network. After training and testing, GraphRBF shows great improvements over existing state-of-the-art methods and strong interpretability of its learned representations. 
 ## Installation  
-
+###system requirements
+For prediction process, you can predict functional binding residues from a protein structure within a few minutes with CPUs only. However, for training a new deep model from scratch, we recommend using a GPU for significantly faster training.
+To use GeoNet with GPUs, you will need: cuda >= 10.0, cuDNN.
 ## Usage   
 
 ### Predict functional binding residues from a protein structure(in PDB format) based on trained deep models
