@@ -1,5 +1,4 @@
 命令：
 cd ../GraphRBF-main
 python GraphRBF.py --querypath ../GraphRBF-main/example --filename 1ddl_A --ligands DNA,RNA,P
-file为单链蛋白质，需提供pdb pssm hmm文件放在example中
-
+In this project, we need the pdb file, pssm file and hmm file of the single chain protein set in "example".
