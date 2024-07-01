@@ -1,4 +1,0 @@
-Prediction command：
-cd ../GraphRBF-main
-python GraphRBF.py --querypath ../GraphRBF-main/example --filename 1ddl_A --ligands DNA,RNA,P
-In this project, we need the pdb file, pssm file and hmm file of the single chain protein set in "example".
