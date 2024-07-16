@@ -79,7 +79,7 @@ Command list：
   
 ### 3.2  Train a new deep model from scratch
 
-#### 3.2.1 Download the datasets used in GeoNet.
+#### 3.2.1 Download the datasets used in GraphRBF.
 
 	Donload the PDB files and the feature files (the PSSM profiles, HMM profiles, and the DSSP profiles) from http: and store the PDB files in the path of the corresponding data.
 	Example:
