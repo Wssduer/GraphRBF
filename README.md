@@ -70,11 +70,12 @@ We have packaged data extraction: data_io_guassian.py, model training: training_
 First, install the environment as described above, and after that, use the code from the prediction command 'prediction code.log' file in the folder:  
 
   `cd ../GraphRBF-main`  
-  `python GraphRBF.py --querypath ../GraphRBF-main/example --filename 1ddl_A --ligands DNA,RNA,P`  
+  `python GraphRBF.py --querypath ../GraphRBF-main/example --filename 1ddl --chain A --ligands DNA,RNA,P`  
   
 Command list：  
   --querypath   The path of query structure  
-  --filename    The file name of the query structure（single chain protein, we need user to upload its pdb,pssm and hmm file）  
+  --filename    The file name of the query structure（we need user to upload its pdb(1ddl_A.pdb) and pssm and hmm file of each chain(1ddl_A.pssm and 1ddl_A.hmm)）  
+  --chain       The name of each protein chain(for single chain A, and more chains AB or ABC)
   --ligands     Ligand types. You can choose from DNA,RNA,P.
   
 ### 3.2  Train a new deep model from scratch
