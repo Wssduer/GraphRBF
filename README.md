@@ -56,11 +56,10 @@ Note: Typical install requirements time on a "normal" desktop computer is 10 min
 Install blast+ for extracting PSSM (position-specific scoring matrix) profiles
 
     To install ncbi-blast-2.8.1+ and download NR database (ftp://ftp.ncbi.nlm.nih.gov/blast/db/) for psiblast, please refer to BLAST® Help (https://www.ncbi.nlm.nih.gov/books/NBK52640/).
-    Set the absolute paths of blast+ and NR databases in the script "GraphRBF.py".
+
 Install HHblits for extracting HMM profiles
 
     To install HHblits and download uniclust30_2018_08 (http://wwwuser.gwdg.de/~compbiol/uniclust/2018_08/uniclust30_2018_08_hhsuite.tar.gz) for HHblits, please refer to https://github.com/soedinglab/hh-suite.
-    Set the absolute paths of HHblits and uniclust30_2018_08 databases in the script "scripts/prediction.py".
     
 Install DSSP for extracting SS (Secondary structure) profiles
 
