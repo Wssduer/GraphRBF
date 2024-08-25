@@ -612,7 +612,7 @@ def main(query_path, filename, chain, ligand_list):
         dist = 20
         query_data = seq_Dataset(query_path, protein, dist)
         if ligand == 'PP':
-            model = GraphRBF(gnn_steps=1, x_ind=92, edge_ind=2, x_hs=128, e_hs=128, u_hs=128,
+            model = GraphRBF(gnn_steps=2, x_ind=92, edge_ind=2, x_hs=256, e_hs=256, u_hs=256,
                              dropratio=0.5, bias=True, r_list=[10], dist=dist, max_nn=40)
         else:
             model = GraphRBF(gnn_steps=1, x_ind=92, edge_ind=2, x_hs=128, e_hs=128, u_hs=128,
