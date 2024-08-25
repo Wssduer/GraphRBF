@@ -92,9 +92,9 @@ Command list：
     Example:
         $ cd scripts
         # demo 1
-        $ python data_io_guassian.py --ligand P --psepos SC --features RT,PSSM,HMM,SS,AF --context_radius 20
+        $ python data_io_guassian.py --ligand P --features RT,PSSM,HMM,SS,AF --context_radius 20
         # demo 2
-        $ python data_io_guassian.py --ligand RNA --psepos SC --features PSSM,HMM,SS,AF --context_radius 15
+        $ python data_io_guassian.py --ligand RNA --features PSSM,HMM,SS,AF --context_radius 15
 
     Output:
     The data sets are saved in ../Datasets/P{ligand}/P{ligand}_dist{context_radius}_{featurecode}.
