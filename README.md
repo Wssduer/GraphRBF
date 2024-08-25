@@ -49,6 +49,7 @@ Install other requirements
         $ pip install torchnet==0.0.4
         $ pip install tqdm
         $ pip install prettytable
+	$ pip install pandas
 
 Note: Typical install requirements time on a "normal" desktop computer is 10 minutes.
     
