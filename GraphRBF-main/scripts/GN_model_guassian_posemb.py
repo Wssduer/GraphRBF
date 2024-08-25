@@ -10,55 +10,6 @@ import numpy as np
 from sklearn.mixture import GaussianMixture
 
 
-class GaussianKernel(nn.Module):
-    def __init__(self, input_dim, num_centers):
-        super(GaussianKernel, self).__init__()
-        covariance_type = 'other'  # 'diag'
-
-        self.N = num_centers
-        self.covariance_type = covariance_type
-        self.mlp = nn.Sequential(
-            nn.LayerNorm(num_centers),
-            nn.Linear(num_centers, num_centers),
-            nn.LeakyReLU(0.2, inplace=True),
-        )
-
-        # Initialize Gaussian centers and widths/sqrt_precision_matrix
-        self.centers, self.widths_or_sqrt_precision = self.initialize_GaussianKernel(input_dim, covariance_type)
-        nn.init.xavier_uniform_(self.centers)
-        nn.init.xavier_uniform_(self.widths_or_sqrt_precision)
-
-    def initialize_GaussianKernel(self, hidden_size, covariance_type):
-        xlims = torch.tensor([[-1, 1] for _ in range(hidden_size)], dtype=torch.float32)
-        coordinates_dimension = xlims.shape[0]
-
-        centers = nn.init.xavier_uniform_(torch.empty(coordinates_dimension, self.N, dtype=torch.float32))
-        widths = nn.init.xavier_uniform_(torch.empty(coordinates_dimension, self.N, dtype=torch.float32))
-
-        centers = centers * (xlims[:, 1] - xlims[:, 0])[:, None] + xlims[:, 0][:, None]
-        widths = widths * (xlims[:, 1] - xlims[:, 0])[:, None] / (self.N / 4)
-
-        if covariance_type == 'diag':
-            return nn.Parameter(centers), nn.Parameter(widths)
-        else:
-            sqrt_precision_matrix = torch.stack(
-                [torch.diag(1.0 / (1e-4 + widths[:, n])).type(torch.float32) for n in range(self.N)], dim=-1)
-            return nn.Parameter(centers), nn.Parameter(sqrt_precision_matrix)
-
-    def forward(self, x):
-        # x shape: [batch_size, residue_num, hidden_size]
-        if self.covariance_type == 'diag':
-            activity = torch.exp(-0.5 * torch.sum(
-                ((x.unsqueeze(-1) - self.centers) / (1e-1 + self.widths_or_sqrt_precision)) ** 2, dim=-2
-            ))
-        else:
-            intermediate = x.unsqueeze(-1) - self.centers
-            intermediate2 = torch.sum(intermediate.unsqueeze(-2) * self.widths_or_sqrt_precision, dim=-3)
-            activity = torch.exp(-0.5 * torch.sum(intermediate2 ** 2, dim=-2))
-
-        return activity
-
-
 class AttentionModule(nn.Module):
     def __init__(self, input_size):
         super(AttentionModule, self).__init__()
@@ -78,9 +29,9 @@ class AttentionAggregation(nn.Module):
         self.W = nn.Linear(input_size, 1)
 
     def forward(self, input_tensor):
-        w = self.W(input_tensor)  # [batch_size, num_centers, 1]
-        attention_weights = F.softmax(w, dim=1)  # [batch_size, num_centers, 1]
-        aggregated_feature = torch.sum(attention_weights * input_tensor, dim=1, keepdim=True)  # [batch_size, 1, hs]
+        w = self.W(input_tensor)
+        attention_weights = F.softmax(w, dim=1) 
+        aggregated_feature = torch.sum(attention_weights * input_tensor, dim=1, keepdim=True) 
 
         return aggregated_feature
 
@@ -163,13 +114,11 @@ class ENPGModel(torch.nn.Module):
             posemb = self.EPmlp(torch.cat([posemb, pos], dim=1))
 
         # Graph feature extract
-        # u = self.RBFBlock(n_out, pos, batch)
         u = self.RBFABlock(n_out, pos, batch)
         u_out.append(u)
         u_out.append(scatter_add(n_out, batch, dim=0))
         u_out = torch.cat(u_out, dim=1)
         u_out = self.Gmlp(u_out)
-        # u_out = u
 
         return n_out, e_out, u_out, posemb
 
@@ -233,14 +182,12 @@ class RBFNN(nn.Module):
         return 1 / torch.sqrt(1 + (distances / self.widths) ** 2)
 
     def forward(self, x, pos):
-        x1 = self.x1(x)  # [residue_num, 1]
-        rbf_output = self.gaussian_rbf(pos)  # [residue_num, num_centers]
-        # rbf_output = self.gaussian_kernel(pos)  # [residue_num, num_centers]
-        mul_output = torch.mul(rbf_output, x1)  # [residue_num, num_centers]
-        x2 = self.x2(mul_output + rbf_output)  # [residue_num, 1]
-        pos1 = self.pos(rbf_output)  # [residue_num, 1]
-        output = self.ReLU(x2 + pos1)  # [residue_num, 1]
-        # scalar_output = torch.sum(output)  # [1,]
+        x1 = self.x1(x)
+        rbf_output = self.gaussian_rbf(pos) 
+        mul_output = torch.mul(rbf_output, x1) 
+        x2 = self.x2(mul_output + rbf_output) 
+        pos1 = self.pos(rbf_output) 
+        output = self.ReLU(x2 + pos1)  
         return output
 
 
@@ -270,13 +217,12 @@ class RBFANN(nn.Module):
         return 1 / torch.sqrt(1 + (distances / self.widths) ** 2)
 
     def forward(self, x, pos, batch):
-        x1 = self.x1(x)  # [residue_num, hs]
-        rbf_output = self.gaussian_rbf(pos)  # [residue_num, num_centers]
-        # rbf_output = self.gaussian_kernel(pos)  # [residue_num, num_centers]
-        mul_output = rbf_output.unsqueeze(2) * x1.unsqueeze(1)  # [residue_num, num_centers, hs]
-        rbf_feature = scatter_add(mul_output, batch, dim=0)  # [batch_size, num_centers, hs]
-        output = (self.attention(rbf_feature)).squeeze(1)  # [batch_size,hs]
-        output = self.norm(self.ReLU(self.x2(output)))  # [batch_size, input_dim]
+        x1 = self.x1(x)
+        rbf_output = self.gaussian_rbf(pos)
+        mul_output = rbf_output.unsqueeze(2) * x1.unsqueeze(1)
+        rbf_feature = scatter_add(mul_output, batch, dim=0)
+        output = (self.attention(rbf_feature)).squeeze(1)
+        output = self.norm(self.ReLU(self.x2(output)))
         output = self.x3(output)
         return output
 
@@ -287,7 +233,6 @@ class EnhancedRBFModel(nn.Module):
         self.n_filters = n_filters
         self.RBFNN = RBFNN(hidden_size, num_kernels)
 
-        # 在循环中创建不同的RBF模块实例
         self.RBFNNBlock = nn.ModuleList(
             [RBFNN(hidden_size, num_kernels) for _ in range(self.n_filters)])
         self.dropout = nn.Dropout(dropratio)
@@ -395,15 +340,12 @@ class MetaGNN(nn.Module):
         x0 = x
         edge_attr0 = edge_attr
         for i in range(self.gnn_steps):
-            # 整合模型
             x1, edge_attr1, u1, node_posemb1 = self.ENPG(x, edge_index, edge_attr, pos, node_posemb, u, batch)
             node_posemb = node_posemb1 + node_posemb
             x = x1 + x
             edge_attr = edge_attr1 + edge_attr
             u = u1 + u
             global_out.append(u)
-
-        # 拼接输出
         global_out = torch.cat(global_out, dim=1)
         global_out = self.attention(global_out)
         return global_out
@@ -416,7 +358,7 @@ class GraphRBF(nn.Module):
         self.max_nn = max_nn
         self.u_ind = 0
         self.pos_ind = 3
-        self.p_hs = 16
+        self.p_hs = 64
         self.bn = nn.ModuleList([nn.BatchNorm1d(x_ind),
                                  nn.BatchNorm1d(2)])
         self.encoder = MetaEncoder(x_ind=x_ind, x_hs=x_hs, edge_ind=edge_ind, e_hs=e_hs, u_ind=self.u_ind, u_hs=u_hs,
