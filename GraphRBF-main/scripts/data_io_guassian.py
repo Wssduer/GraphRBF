@@ -701,17 +701,6 @@ if __name__ == '__main__':
     train_list, valid_list = tv_split(train_list, args.tvseed)
     StatisticsSampleNum(train_list, valid_list, test_list, seqanno)
 
-    with open('test_listPH.pkl', 'rb') as file:
-        test_list1 = pickle.load(file)
-    test_list = test_list1
-    with open('train_listPH.pkl', 'rb') as file:
-        train_list1 = pickle.load(file)
-    train_list = train_list1
-    with open('valid_listPH.pkl', 'rb') as file:
-        valid_list1 = pickle.load(file)
-    valid_list = valid_list1
-    StatisticsSampleNum(train_list, valid_list, test_list, seqanno)
-
     print('1.Extract the PDB information.')
     cal_PDBDF(seqlist, PDB_chain_dir, PDB_DF_dir)
     print('2.calculate the pseudo positions.')
