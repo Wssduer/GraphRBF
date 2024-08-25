@@ -640,7 +640,6 @@ if __name__ == '__main__':
     checkargs(args)
 
     ligand = 'P' + args.ligand
-    trans_anno = args.trans_anno
     dist = args.context_radius
     feature_list = []
     feature_combine = ''
@@ -712,17 +711,6 @@ if __name__ == '__main__':
         valid_list1 = pickle.load(file)
     valid_list = valid_list1
     StatisticsSampleNum(train_list, valid_list, test_list, seqanno)
-
-    # PDB_DF_dir = Dataset_dir + '/PDB_DF'
-    # seqlist = train_list + test_list
-    # random.seed(20010217)
-    # random.shuffle(seqlist)
-    # # train_list = seqlist[375:]
-    # # test_list = seqlist[:375]
-    # train_list = seqlist[220:]
-    # test_list = seqlist[:220]
-    # train_list, valid_list = tv_split(train_list, args.tvseed)
-    # StatisticsSampleNum(train_list, valid_list, test_list, seqanno)
 
     print('1.Extract the PDB information.')
     cal_PDBDF(seqlist, PDB_chain_dir, PDB_DF_dir)
