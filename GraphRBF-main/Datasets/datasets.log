@@ -1,1 +1,4 @@
 Please obtain the total protein binding datasets of GraphRBF from https://zenodo.org/records/10826801.
+Each data file contains: a PDB folder for storing protein PDB files; a feature folder for storing various features, including subfolders for PSSM, HMM, and SS. 
+After decompressing the data, please save them into the corresponding data files respectively. 
+The features for multi-chain proteins in the protein-protein binding site data have already been saved in the respective locations.
