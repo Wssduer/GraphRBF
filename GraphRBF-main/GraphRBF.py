@@ -222,6 +222,7 @@ def norm_pssm(query_path, filename, chain):
     pssm_list = []
     for chain_id in list(chain):
         file_path = '{}/{}_{}.pssm'.format(query_path, filename, chain_id)
+
         with open(file_path, 'r') as f:
             text = f.readlines()
 
@@ -234,6 +235,27 @@ def norm_pssm(query_path, filename, chain):
 
     pssm_list = np.concatenate(pssm_list, axis=0)
     pssm_list = 1 / (1 + np.exp(-pssm_list))
+
+    return pssm_list
+
+def norm_pssmpp(query_path, filename, chain):
+    pssm_list = []
+    for chain_id in list(chain):
+        file_path = '{}/{}_{}.pssm'.format(query_path, filename, chain_id)
+
+        with open(file_path, 'r') as f:
+            text = f.readlines()
+
+        for line in text[3:]:
+            if line == '\n':
+                break
+            else:
+                res_pssm = np.array(list(map(int, line.split()[2:22]))).reshape(1, -1)
+                pssm_list.append(res_pssm)
+
+    pssm_list = np.concatenate(pssm_list, axis=0)
+    pssm_list = 1 / (1 + np.exp(-pssm_list))
+    pssm_list.fill(0)
 
     return pssm_list
 
@@ -301,7 +323,7 @@ def norm_DSSP(query_path, protein):
         line = text[i]
         if line[13] not in maxASA.keys() or line[9] == ' ':
             continue
-        res_id = float(line[5:10])
+        res_id = f'{line[11]}{line[5:11].strip()}'
         res_dssp = np.zeros([14])
         res_dssp[:8] = map_ss_8[line[16]]  # SS
         res_dssp[8] = min(float(line[35:38]) / maxASA[line[13]], 1)
@@ -314,6 +336,40 @@ def norm_DSSP(query_path, protein):
 
     return dssp
 
+def norm_DSSPpp(query_path, protein):
+    maxASA = {'G': 188, 'A': 198, 'V': 220, 'I': 233, 'L': 304, 'F': 272, 'P': 203, 'M': 262, 'W': 317, 'C': 201,
+              'S': 234, 'T': 215, 'N': 254, 'Q': 259, 'Y': 304, 'H': 258, 'D': 236, 'E': 262, 'K': 317, 'R': 319}
+    map_ss_8 = {' ': [1, 0, 0, 0, 0, 0, 0, 0], 'S': [0, 1, 0, 0, 0, 0, 0, 0], 'T': [0, 0, 1, 0, 0, 0, 0, 0],
+                'H': [0, 0, 0, 1, 0, 0, 0, 0],
+                'G': [0, 0, 0, 0, 1, 0, 0, 0], 'I': [0, 0, 0, 0, 0, 1, 0, 0], 'E': [0, 0, 0, 0, 0, 0, 1, 0],
+                'B': [0, 0, 0, 0, 0, 0, 0, 1]}
+    file_path = '{}/{}.dssp'.format(query_path, protein)
+    with open(file_path, 'r') as f:
+        text = f.readlines()
+
+    start_line = 0
+    for i in range(0, len(text)):
+        if text[i].startswith('  #  RESIDUE AA STRUCTURE'):
+            start_line = i + 1
+            break
+
+    dssp = {}
+    for i in range(start_line, len(text)):
+        line = text[i]
+        if line[13] not in maxASA.keys() or line[9] == ' ':
+            continue
+        res_id = float(line[5:10])
+        res_dssp = np.zeros([14])
+        res_dssp[:8] = map_ss_8[line[16]]  # SS
+        res_dssp[8] = min(float(line[35:38]) / maxASA[line[13]], 1)
+        res_dssp[9] = (float(line[85:91]) + 1) / 2
+        res_dssp[10] = min(1, float(line[91:97]) / 180)
+        res_dssp[11] = min(1, (float(line[97:103]) + 180) / 360)
+        res_dssp[12] = min(1, (float(line[103:109]) + 180) / 360)
+        res_dssp[13] = min(1, (float(line[109:115]) + 180) / 360)
+        dssp[res_id] = res_dssp.reshape((1, -1))
+
+    return dssp
 
 def norm_OneHot(sequence):
     amino_acids = ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y']
@@ -610,10 +666,13 @@ def main(query_path, filename, chain, ligand_list):
     for ligand in ligand_list:
         print(ligand)
         dist = 20
+        if ligand == 'PP':
+            query_pssm = norm_pssmpp(query_path, filename, chain)
+            query_dssp = norm_DSSPpp(query_path, protein)
+            PDBResidueFeature(query_path, protein, query_onehot, query_pssm, query_hhm, query_dssp)
         query_data = seq_Dataset(query_path, protein, dist)
         if ligand == 'PP':
-            model = GraphRBF(gnn_steps=2, x_ind=92, edge_ind=2, x_hs=256, e_hs=256, u_hs=256,
-                             dropratio=0.5, bias=True, r_list=[10], dist=dist, max_nn=40)
+            model = GraphRBF(gnn_steps=2, x_ind=92, edge_ind=2, x_hs=256, e_hs=256, u_hs=256, dropratio=0.5, bias=True, r_list=[10], dist=dist, max_nn=40)
         else:
             model = GraphRBF(gnn_steps=1, x_ind=92, edge_ind=2, x_hs=128, e_hs=128, u_hs=128,
                              dropratio=0.5, bias=True, r_list=[10], dist=dist, max_nn=40)
@@ -670,7 +729,7 @@ if __name__ == '__main__':
 
     for ligand_i in ligand_list_:
         if ligand_i not in ['DNA', 'RNA', 'P']:
-            print('ERROR: ligand "{}" is not supported by GraphBind!'.format(ligand_i))
+            print('ERROR: ligand "{}" is not supported by GraphRBF!'.format(ligand_i))
             raise ValueError
         else:
             ligand_list.append('P' + ligand_i)
@@ -721,3 +780,4 @@ if __name__ == '__main__':
 
 
     main(query_path, filename, chain, ligand_list)
+
